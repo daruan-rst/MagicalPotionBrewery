@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.springframework.hateoas.RepresentationModel
 
 @Entity
+@Table(name = "ingredients")
 data class Ingredient(
 
         @Id
