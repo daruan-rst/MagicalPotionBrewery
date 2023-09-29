@@ -12,6 +12,9 @@ data class Ingredient(
         var id: Long = 0,
 
         @Column(name = "name", nullable = false, length = 180)
-        var ingredientName: String = ""
+        var name: String = "",
+
+        @Column(name = "flavor", nullable = false)
+        var flavor: IngredientFlavor
 
 ) : RepresentationModel<Ingredient>()
