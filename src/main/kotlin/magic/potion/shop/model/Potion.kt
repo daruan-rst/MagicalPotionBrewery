@@ -2,29 +2,28 @@ package magic.potion.shop.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
-
 import org.springframework.hateoas.RepresentationModel
 
 @Entity
 @Table(name= "potions")
 data class Potion(
-
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0,
 
-        @get: NotBlank
-        @Column(name = "potion_ingredient")
-        @OneToMany(mappedBy = "potion", cascade = [CascadeType.ALL], orphanRemoval = true)
-        var potionIngredient: Set<PotionIngredient> = emptySet(),
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "recipe_id")
+        var recipe: Recipe,
 
-        @get: NotBlank
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "wizard_id")
+        var wizard: Wizard,
+
         @Column(name= "effect")
+        @Enumerated(EnumType.STRING)
         var effect: PotionEffect,
 
-        @get: NotBlank
         @Column(name= "power")
-        var power: Long = 0
-
+        var power: Long = 0,
 ) : RepresentationModel<Potion>()
 
