@@ -1,5 +1,6 @@
 package magic.potion.shop.controller
 
+import magic.potion.shop.model.PotionIngredient
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.service.WizardService
 import org.springframework.web.bind.annotation.*
@@ -26,6 +27,11 @@ class WizardController(private val wizardService: WizardService) {
     @PutMapping(value = ["/{id}"])
     fun update(@RequestBody wizard: Wizard, @PathVariable(value="id") id: Long) : Wizard {
         return wizardService.updateWizard(id, wizard)
+    }
+
+    @PatchMapping(value = ["/{id}"])
+    fun addPotionIngredients(@RequestBody potionIngredients: List<PotionIngredient>, @PathVariable(value="id") id: Long): Wizard {
+        return wizardService.addPotionIngredients(id, potionIngredients)
     }
 
     @DeleteMapping(value = ["/{id}"])
