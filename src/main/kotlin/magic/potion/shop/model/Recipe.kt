@@ -1,5 +1,6 @@
 package magic.potion.shop.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import org.springframework.hateoas.RepresentationModel
 
@@ -15,7 +16,9 @@ data class Recipe(
 
     @ManyToOne
     @JoinColumn(name = "wizard_id")
+    @JsonIgnoreProperties("recipes")
     var wizard: Wizard? = null,
+
 
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinTable(

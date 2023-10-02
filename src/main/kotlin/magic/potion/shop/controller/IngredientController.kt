@@ -18,6 +18,11 @@ class IngredientController(private val ingredientService: IngredientService) {
         return ingredientService.findById(id)
     }
 
+    @GetMapping(value = ["findIngredientByName/{name}"])
+    fun findByName(@PathVariable(value="name") name: String) : Ingredient {
+        return ingredientService.findIngredientByName(name)
+    }
+
     @PostMapping
     fun createIngredient(@RequestBody ingredient: Ingredient) : Ingredient {
         return ingredientService.createIngredient(ingredient)

@@ -4,7 +4,10 @@ import magic.potion.shop.controller.IngredientController
 import magic.potion.shop.controller.WizardController
 import magic.potion.shop.exceptions.RequiredObjectIsNullException
 import magic.potion.shop.exceptions.ResourceNotFoundException
+import magic.potion.shop.model.PotionIngredient
 import magic.potion.shop.model.Wizard
+import magic.potion.shop.repositories.PotionIngredientRepository
+import magic.potion.shop.repositories.PotionRepository
 import magic.potion.shop.repositories.WizardRepository
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
@@ -13,8 +16,9 @@ import java.util.logging.Logger
 
 @Service
 class WizardService(
-        private val wizardRepository: WizardRepository,
-        private val logger: Logger = Logger.getLogger(WizardService::class.java.name)) {
+    private val wizardRepository: WizardRepository,
+    private val potionIngredientRepository: PotionIngredientRepository,
+    private val logger: Logger = Logger.getLogger(WizardService::class.java.name)) {
 
     fun findAll(): List<Wizard> {
         logger.info("Finding all Wizards")
@@ -53,10 +57,23 @@ class WizardService(
 
         logger.info("Updating a Wizard")
         wizardThatWillBeUpdated.name = wizard.name
-        wizardThatWillBeUpdated.iventary = wizard.iventary
+        wizardThatWillBeUpdated.bottleInventory = wizard.bottleInventory
+        wizardThatWillBeUpdated.ingredientInventory = wizard.ingredientInventory
+        wizardThatWillBeUpdated.recipes = wizard.recipes
+        wizardThatWillBeUpdated.potions = wizard.potions
         val withSelfRel = WebMvcLinkBuilder.linkTo(IngredientController::class.java).slash(wizardThatWillBeUpdated.id).withSelfRel()
         wizardThatWillBeUpdated.add(withSelfRel)
         return wizardRepository.save(wizardThatWillBeUpdated)
+    }
+
+    fun addPotionIngredients(id: Long, ingredients: List<PotionIngredient>) : Wizard{
+        val foundWizard = findById(id)
+        ingredients.forEach { ingredient -> ingredient.wizard = foundWizard }
+        potionIngredientRepository.saveAll(ingredients)
+        foundWizard.ingredientInventory.plus(ingredients)
+        wizardRepository.save(foundWizard)
+        return foundWizard
+
     }
 
     fun delete(id: Long): Wizard {

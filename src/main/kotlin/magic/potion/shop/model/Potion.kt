@@ -1,5 +1,6 @@
 package magic.potion.shop.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import org.springframework.hateoas.RepresentationModel
@@ -13,11 +14,14 @@ data class Potion(
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "recipe_id")
+        @JsonIgnoreProperties("potions")
         var recipe: Recipe,
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne
         @JoinColumn(name = "wizard_id")
-        var wizard: Wizard,
+        @JsonIgnoreProperties("potions")
+        var wizard: Wizard? = null,
+
 
         @Column(name= "effect")
         @Enumerated(EnumType.STRING)
