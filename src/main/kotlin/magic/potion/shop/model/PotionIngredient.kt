@@ -2,6 +2,7 @@ package magic.potion.shop.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
+import org.springframework.hateoas.RepresentationModel
 import java.math.BigDecimal
 
 @Entity
@@ -25,5 +26,8 @@ data class PotionIngredient(
     var quantity: BigDecimal // in grams
 
 
-)
+) {
+    constructor() : this(0, Wizard(), Ingredient(), BigDecimal.ZERO)
+
+}
 

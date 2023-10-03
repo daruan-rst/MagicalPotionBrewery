@@ -17,12 +17,6 @@ data class Potion(
         @JsonIgnoreProperties("potions")
         var recipe: Recipe,
 
-        @ManyToOne
-        @JoinColumn(name = "wizard_id")
-        @JsonIgnoreProperties("potions")
-        var wizard: Wizard? = null,
-
-
         @Column(name= "effect")
         @Enumerated(EnumType.STRING)
         var effect: PotionEffect,

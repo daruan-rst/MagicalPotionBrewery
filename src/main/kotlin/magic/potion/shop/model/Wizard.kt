@@ -1,7 +1,9 @@
 package magic.potion.shop.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.springframework.hateoas.RepresentationModel
+import java.util.*
 
 @Entity
 @Table(name = "wizards")
@@ -13,15 +15,16 @@ data class Wizard(
         @Column(name= "name", nullable = false, length = 180)
         var name: String = "",
 
-        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         var recipes: Set<Recipe> = emptySet(),
 
-        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-        var potions: Set<Potion> = emptySet(),
-
-        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         var ingredientInventory: Set<PotionIngredient> = emptySet(),
 
-        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-        var bottleInventory: Set<Bottle> = emptySet(),
-) : RepresentationModel<Wizard>()
+        @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        var bottleInventory: Set<Bottle> = mutableSetOf(),
+) : RepresentationModel<Wizard>(){
+        override fun hashCode(): Int {
+                return Objects.hash(id, name)
+        }
+}
