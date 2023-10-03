@@ -1,5 +1,6 @@
 package magic.potion.shop.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import org.springframework.hateoas.RepresentationModel
@@ -15,6 +16,7 @@ data class PotionIngredient(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wizard_id")
     @JsonIgnoreProperties("potion_ingredient")
+    @JsonIgnore
     var wizard: Wizard,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,7 +26,6 @@ data class PotionIngredient(
 
     @Column(name = "quantity")
     var quantity: BigDecimal // in grams
-
 
 ) {
     constructor() : this(0, Wizard(), Ingredient(), BigDecimal.ZERO)

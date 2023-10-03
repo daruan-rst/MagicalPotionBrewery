@@ -16,10 +16,10 @@ data class Wizard(
         var name: String = "",
 
         @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-        var recipes: Set<Recipe> = emptySet(),
+        var recipes: Set<Recipe> = mutableSetOf(),
 
         @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-        var ingredientInventory: Set<PotionIngredient> = emptySet(),
+        var ingredientInventory: Set<PotionIngredient> = mutableSetOf(),
 
         @OneToMany(mappedBy = "wizard", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
         var bottleInventory: Set<Bottle> = mutableSetOf(),
@@ -27,4 +27,5 @@ data class Wizard(
         override fun hashCode(): Int {
                 return Objects.hash(id, name)
         }
+
 }

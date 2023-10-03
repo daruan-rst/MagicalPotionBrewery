@@ -4,9 +4,7 @@ import magic.potion.shop.model.IngredientFlavor
 import java.math.BigDecimal
 
 data class PotionIngredientRequest(
-
-    var ingredientName: String,
-    var flavor: IngredientFlavor,
-    var quantity: BigDecimal,
-
-    )
+    val ingredientName: String,
+    val flavor: IngredientFlavor,
+    val quantity: BigDecimal
+)

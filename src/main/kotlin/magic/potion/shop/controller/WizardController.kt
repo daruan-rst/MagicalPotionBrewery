@@ -1,8 +1,8 @@
 package magic.potion.shop.controller
 
-import magic.potion.shop.model.PotionIngredient
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.request.PotionIngredientRequest
+import magic.potion.shop.request.RecipeIngredientRequest
 import magic.potion.shop.service.WizardService
 import org.springframework.web.bind.annotation.*
 
@@ -34,6 +34,17 @@ class WizardController(private val wizardService: WizardService) {
     fun addPotionIngredients(@RequestBody potionIngredients: List<PotionIngredientRequest>, @PathVariable(value="id") id: Long): Wizard {
         return wizardService.addPotionIngredients(id, potionIngredients)
     }
+
+    @PatchMapping(value = ["recipe/{id}"])
+    fun craftRecipe(@RequestBody recipeRequest: RecipeIngredientRequest, @PathVariable(value="id") id: Long): Wizard {
+        return wizardService.craftARecipe(id, recipeRequest)
+    }
+
+    @PatchMapping(value = ["potion/{id}/{recipeId}"])
+    fun brewAPotion(@PathVariable(value="id") id: Long,@PathVariable(value="id") recipeId: Long ): Wizard {
+        return wizardService.brewAPotion(id, recipeId)
+    }
+
 
     @PatchMapping(value = ["bottle/{id}"])
     fun findABottle(@PathVariable(value="id") id: Long): Wizard {
