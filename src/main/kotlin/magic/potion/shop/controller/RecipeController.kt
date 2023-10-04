@@ -5,7 +5,7 @@ import magic.potion.shop.service.RecipeService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/ingredient/v1")
+@RequestMapping("/api/recipe/v1")
 class RecipeController(private val recipeService: RecipeService) {
 
     @GetMapping

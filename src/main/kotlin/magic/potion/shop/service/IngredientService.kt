@@ -38,7 +38,7 @@ class IngredientService(
     }
 
     fun findIngredientByName(name : String): Ingredient {
-        logger.info(String.format("Searching an Ingredient by the name of %s", name))
+        logger.info("Searching an Ingredient by the name of $name")
         val ingredient = ingredientRepository.findIngredientByName(name)
             .orElseThrow { ResourceNotFoundException(String.format("No records found for the name of %s", name)) }
         ingredient.removeLinks()
@@ -52,7 +52,7 @@ class IngredientService(
         if (ingredient == null) {
             throw RequiredObjectIsNullException()
         }
-        logger.info("Creating a Ingredient!")
+        logger.info("Creating an Ingredient!")
         val createdIngredient = ingredientRepository.save(ingredient)
         val withSelfRel =
             WebMvcLinkBuilder.linkTo(IngredientController::class.java).slash(createdIngredient.id).withSelfRel()
@@ -63,7 +63,7 @@ class IngredientService(
     fun updateIngredient(id: Long, ingredient: Ingredient): Ingredient {
         val ingredientThatWillBeUpdated: Ingredient = findById(id)
 
-        logger.info("Updating an Ingredient")
+        logger.info("Updating an ingredient")
         ingredientThatWillBeUpdated.flavor = ingredient.flavor
         ingredientThatWillBeUpdated.name = ingredient.name
         val withSelfRel =

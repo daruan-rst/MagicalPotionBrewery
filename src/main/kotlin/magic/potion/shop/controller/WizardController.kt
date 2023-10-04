@@ -30,23 +30,23 @@ class WizardController(private val wizardService: WizardService) {
         return wizardService.updateWizard(id, wizard)
     }
 
-    @PatchMapping(value = ["ingredients/{id}"])
+    @PatchMapping(value = ["/{id}/ingredients"])
     fun addPotionIngredients(@RequestBody potionIngredients: List<PotionIngredientRequest>, @PathVariable(value="id") id: Long): Wizard {
         return wizardService.addPotionIngredients(id, potionIngredients)
     }
 
-    @PatchMapping(value = ["recipe/{id}"])
+    @PatchMapping(value = ["/{id}/recipe"])
     fun craftRecipe(@RequestBody recipeRequest: RecipeIngredientRequest, @PathVariable(value="id") id: Long): Wizard {
         return wizardService.craftARecipe(id, recipeRequest)
     }
 
-    @PatchMapping(value = ["potion/{id}/{recipeId}"])
+    @PatchMapping(value = ["/{id}/potion/{recipeId}"])
     fun brewAPotion(@PathVariable(value="id") id: Long,@PathVariable(value="id") recipeId: Long ): Wizard {
         return wizardService.brewAPotion(id, recipeId)
     }
 
 
-    @PatchMapping(value = ["bottle/{id}"])
+    @PatchMapping(value = ["{id}/bottle"])
     fun findABottle(@PathVariable(value="id") id: Long): Wizard {
         return wizardService.findABottle(id)
     }
