@@ -5,7 +5,7 @@ import magic.potion.shop.service.PotionService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/potion/v1")
+@RequestMapping("v1/api/potion")
 class PotionController(private val potionService: PotionService) {
 
     @GetMapping

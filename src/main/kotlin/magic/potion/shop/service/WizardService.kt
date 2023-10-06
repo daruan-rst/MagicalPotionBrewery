@@ -29,9 +29,8 @@ class WizardService(
     fun findAll(): List<Wizard> {
         logger.info("Finding all Wizards")
         val wizards = wizardRepository.findAll()
-        for (wizard in wizards) {
-            val withSelfRel = linkTo(WizardController::class.java).slash(wizard.id).withSelfRel()
-            wizard.add(withSelfRel)
+        wizards.forEach {
+            it.add(linkTo(WizardController::class.java).slash(it.id).withSelfRel())
         }
 
         return wizards

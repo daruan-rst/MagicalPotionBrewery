@@ -19,9 +19,8 @@ class RecipeService(
     fun findAll(): List<Recipe> {
         logger.info("Finding all Recipes")
         val recipes = recipeRepository.findAll()
-        for (recipe in recipes) {
-            val withSelfRel = WebMvcLinkBuilder.linkTo(RecipeController::class.java).slash(recipe.id).withSelfRel()
-            recipe.add(withSelfRel)
+        recipes.forEach {
+            it.add(WebMvcLinkBuilder.linkTo(RecipeController::class.java).slash(it.id).withSelfRel())
         }
 
         return recipes
@@ -33,10 +32,8 @@ class RecipeService(
         if (recipeList.isEmpty()) {
             throw ResourceNotFoundException("No recipe was found for ingredient $ingredientName")
         }
-        recipeList.forEach { recipe ->
-            val withSelfRel =
-                WebMvcLinkBuilder.linkTo(RecipeController::class.java).slash(recipe.id).withSelfRel()
-            recipe.add(withSelfRel)
+        recipeList.forEach {
+            it.add(WebMvcLinkBuilder.linkTo(RecipeController::class.java).slash(it.id).withSelfRel())
         }
         return recipeList
     }
@@ -52,9 +49,7 @@ class RecipeService(
     }
 
     fun createRecipe(recipe: Recipe?): Recipe {
-        if (recipe == null) {
-            throw RequiredObjectIsNullException()
-        }
+        recipe?: throw RequiredObjectIsNullException()
         logger.info("Creating a Recipe!")
         val createdRecipe = recipeRepository.save(recipe)
         val withSelfRel = WebMvcLinkBuilder.linkTo(RecipeController::class.java).slash(createdRecipe.id).withSelfRel()

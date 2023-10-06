@@ -13,7 +13,7 @@ import magic.potion.shop.service.WizardService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/wizard/v1")
+@RequestMapping("v1/api/wizard")
 @Tag(name = "Wizard", description = "Endpoints for Managing People")
 class WizardController(private val wizardService: WizardService) {
 

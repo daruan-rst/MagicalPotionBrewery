@@ -49,9 +49,7 @@ class IngredientService(
     }
 
     fun createIngredient(ingredient: Ingredient?): Ingredient {
-        if (ingredient == null) {
-            throw RequiredObjectIsNullException()
-        }
+        ingredient?: throw RequiredObjectIsNullException()
         logger.info("Creating an Ingredient!")
         val createdIngredient = ingredientRepository.save(ingredient)
         val withSelfRel =

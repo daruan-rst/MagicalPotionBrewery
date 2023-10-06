@@ -18,10 +18,8 @@ class PotionService(
     fun findAll(): List<Potion> {
         logger.info("Finding all Potion")
         val potions = potionRepository.findAll()
-        for (potion in potions) {
-            val withSelfRel =
-                WebMvcLinkBuilder.linkTo(PotionController::class.java).slash(potion.id).withSelfRel()
-            potion.add(withSelfRel)
+        potions.forEach {
+            it.add(WebMvcLinkBuilder.linkTo(PotionController::class.java).slash(it.id).withSelfRel())
         }
 
         return potions
@@ -38,9 +36,7 @@ class PotionService(
     }
 
     fun createPotion(potion: Potion?): Potion {
-        if (potion == null) {
-            throw RequiredObjectIsNullException()
-        }
+        potion?: throw RequiredObjectIsNullException()
         logger.info("Creating a Potion!")
         val createdPotion = potionRepository.save(potion)
         val withSelfRel =
