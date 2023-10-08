@@ -6,11 +6,13 @@ import magic.potion.shop.exceptions.NotEnoughResourcesException
 import magic.potion.shop.exceptions.RequiredObjectIsNullException
 import magic.potion.shop.exceptions.ResourceNotFoundException
 import magic.potion.shop.model.*
-import magic.potion.shop.repositories.*
+import magic.potion.shop.repositories.PotionRepository
+import magic.potion.shop.repositories.RecipeIngredientRepository
+import magic.potion.shop.repositories.RecipeRepository
+import magic.potion.shop.repositories.WizardRepository
 import magic.potion.shop.request.PotionIngredientRequest
 import magic.potion.shop.request.RecipeIngredientRequest
 import magic.potion.shop.utils.validatePotionIngredient
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -19,7 +21,7 @@ import java.util.logging.Logger
 @Service
 class WizardService(
     private val wizardRepository: WizardRepository,
-    private val ingredientRepository: IngredientRepository,
+    private val ingredientService: IngredientService,
     private val recipeIngredientRepository: RecipeIngredientRepository,
     private val recipeRepository: RecipeRepository,
     private val potionRepository: PotionRepository,
@@ -29,8 +31,9 @@ class WizardService(
     fun findAll(): List<Wizard> {
         logger.info("Finding all Wizards")
         val wizards = wizardRepository.findAll()
-        wizards.forEach {
-            it.add(linkTo(WizardController::class.java).slash(it.id).withSelfRel())
+        for (wizard in wizards) {
+            val withSelfRel = linkTo(WizardController::class.java).slash(wizard.id).withSelfRel()
+            wizard.add(withSelfRel)
         }
 
         return wizards
@@ -52,7 +55,7 @@ class WizardService(
         val wizard = wizardRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("No records found for this Id") }
         wizard.removeLinks()
-        val withSelfRel = WebMvcLinkBuilder.linkTo(IngredientController::class.java).slash(wizard.id).withSelfRel()
+        val withSelfRel = linkTo(IngredientController::class.java).slash(wizard.id).withSelfRel()
         wizard.add(withSelfRel)
         return wizard
     }
@@ -65,7 +68,7 @@ class WizardService(
         wizardThatWillBeUpdated.bottleInventory = wizard.bottleInventory
         wizardThatWillBeUpdated.ingredientInventory = wizard.ingredientInventory
         wizardThatWillBeUpdated.recipes = wizard.recipes
-        val withSelfRel = WebMvcLinkBuilder.linkTo(IngredientController::class.java).slash(wizardThatWillBeUpdated.id).withSelfRel()
+        val withSelfRel = linkTo(IngredientController::class.java).slash(wizardThatWillBeUpdated.id).withSelfRel()
         wizardThatWillBeUpdated.add(withSelfRel)
         return wizardRepository.save(wizardThatWillBeUpdated)
     }
@@ -99,10 +102,7 @@ class WizardService(
         recipeIngredientRequest.potionIngredientList.forEach { ingredientRequest ->
             validatePotionIngredient(ingredientRequest)
 
-            val ingredientOptional = ingredientRepository.findIngredientByName(ingredientRequest.ingredientName)
-            val ingredient: Ingredient = ingredientOptional.orElseGet {
-                ingredientRepository.save(Ingredient(0, ingredientRequest.ingredientName, ingredientRequest.flavor))
-            }
+            val ingredient = getOrCreateIngredient(ingredientRequest)
 
             val recipeIngredient = recipeIngredientRepository.findRecipeIngredientByIngredientAndQuantity(ingredient, ingredientRequest.quantity)
                 .orElseGet{ recipeIngredientRepository.save(RecipeIngredient(0,ingredient, ingredientRequest.quantity))}
@@ -116,8 +116,8 @@ class WizardService(
     }
 
     fun brewAPotion(wizardId:Long, recipeId: Long) : Wizard{
-        var wizard = findById(wizardId)
-        var thisRecipe = recipeRepository.findById(recipeId)
+        val wizard = findById(wizardId)
+        val thisRecipe = recipeRepository.findById(recipeId)
             .orElseThrow { ResourceNotFoundException("No recipe found for this Id") }
         val emptyBottle: Bottle =
             wizard.bottleInventory.find { it.volume == 0 }
@@ -187,16 +187,18 @@ class WizardService(
         val randomFactor = Math.random() * 10 - 5
         val charArray = recipe.description.toCharArray()
 
-        val sum = charArray.sumBy { it.toInt() } + randomFactor.toInt()
+        val sum = charArray.sumOf { it.code } + randomFactor.toInt()
 
         return (sum + 100).toLong()
     }
 
     private fun getOrCreateIngredient(ingredientRequest: PotionIngredientRequest): Ingredient {
         validatePotionIngredient(ingredientRequest)
-        val ingredientOptional = ingredientRepository.findIngredientByName(ingredientRequest.ingredientName)
-        val ingredient: Ingredient = ingredientOptional.orElseGet {
-            ingredientRepository.save(Ingredient(0, ingredientRequest.ingredientName, ingredientRequest.flavor))
+        val ingredient : Ingredient = try {
+            ingredientService.findIngredientByName(ingredientRequest.ingredientName)
+
+        }catch ( e: ResourceNotFoundException){
+            ingredientService.createIngredient(Ingredient(0, ingredientRequest.ingredientName, ingredientRequest.flavor))
         }
         return ingredient
     }
