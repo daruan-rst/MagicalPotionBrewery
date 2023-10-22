@@ -1,6 +1,7 @@
 package magic.potion.shop.exceptions.handler
 
 import magic.potion.shop.exceptions.ExceptionResponse
+import magic.potion.shop.exceptions.NotEnoughResourcesException
 import magic.potion.shop.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,5 +25,16 @@ class ExceptionHandler: ResponseEntityExceptionHandler() {
                 request.getDescription(false)
         )
         return ResponseEntity<ExceptionResponse>(exceptioResponse, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(NotEnoughResourcesException::class)
+    fun handleNotEnoughResourcesExceptions(ex: Exception, request: WebRequest) :
+            ResponseEntity<ExceptionResponse> {
+        val exceptioResponse = ExceptionResponse(
+            Date(),
+            ex.message,
+            request.getDescription(false)
+        )
+        return ResponseEntity<ExceptionResponse>(exceptioResponse, HttpStatus.UNPROCESSABLE_ENTITY)
     }
 }
