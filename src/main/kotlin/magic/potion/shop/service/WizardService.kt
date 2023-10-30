@@ -10,7 +10,6 @@ import magic.potion.shop.repositories.PotionRepository
 import magic.potion.shop.repositories.RecipeIngredientRepository
 import magic.potion.shop.repositories.RecipeRepository
 import magic.potion.shop.repositories.WizardRepository
-import magic.potion.shop.request.PotionIngredientRequest
 import magic.potion.shop.request.RecipeIngredientRequest
 import magic.potion.shop.utils.validatePotionIngredient
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
@@ -73,7 +72,7 @@ class WizardService(
         return wizardRepository.save(wizardThatWillBeUpdated)
     }
 
-    fun addPotionIngredients(id: Long, potionIngredientRequests: List<PotionIngredientRequest>): Wizard {
+    fun addPotionIngredients(id: Long, potionIngredientRequests: List<PotionIngredient>): Wizard {
         val foundWizard = findById(id)
 
         potionIngredientRequests.forEach { ingredientRequest ->
@@ -192,13 +191,13 @@ class WizardService(
         return (sum + 100).toLong()
     }
 
-    private fun getOrCreateIngredient(ingredientRequest: PotionIngredientRequest): Ingredient {
+    private fun getOrCreateIngredient(ingredientRequest: PotionIngredient): Ingredient {
         validatePotionIngredient(ingredientRequest)
         val ingredient : Ingredient = try {
-            ingredientService.findIngredientByName(ingredientRequest.ingredientName)
+            ingredientService.findIngredientByName(ingredientRequest.wizardIngredient.name)
 
         }catch ( e: ResourceNotFoundException){
-            ingredientService.createIngredient(Ingredient(0, ingredientRequest.ingredientName, ingredientRequest.flavor))
+            ingredientService.createIngredient(Ingredient(0, ingredientRequest.wizardIngredient.name,  ingredientRequest.wizardIngredient.flavor))
         }
         return ingredient
     }
