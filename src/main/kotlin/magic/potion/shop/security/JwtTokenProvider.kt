@@ -19,16 +19,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 
 @Service
-class JwtTokenProvider(val userDetailsService: UserDetailsService) {
+class JwtTokenProvider(@Autowired val userDetailsService: UserDetailsService) {
 
     @Value("\${security.jwt.token.secret-key:secret}")
     private var secretKey = "secret"
 
     @Value("\${security.jwt.token.expire-length:3600000}")
     private var validityInMilliseconds: Long = 3_600_000 //1h
-
-//    @Autowired
-//    private lateinit var userDetailsService: UserDetailsService
 
     private lateinit var algorithm: Algorithm
 
