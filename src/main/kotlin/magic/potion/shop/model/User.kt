@@ -15,9 +15,6 @@ class User : UserDetails{
     @Column(name = "user_name", unique = true)
     var userName: String? = null
 
-    @Column(name = "full_name")
-    var fullName: String? = null
-
     @Column(name = "password")
     private var password: String? = null
 
