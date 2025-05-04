@@ -14,20 +14,26 @@ import org.mockito.MockitoAnnotations
 
 class IngredientServiceTest {
 
+    @Mock
+    private lateinit var ingredientRepository: IngredientRepository
 
-   @Mock
-   private lateinit var ingredientRepository: IngredientRepository
+    private lateinit var ingredientService: IngredientService
 
-   @InjectMocks
-   private lateinit var ingredientService: IngredientService
+   var testIngredient = Ingredient(0, "Dance Apple", IngredientFlavor.SWEET)
 
-   @BeforeEach
-   fun setUp(){
-      MockitoAnnotations.openMocks(this);
-   }
+
+    @BeforeEach
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        ingredientService = IngredientService(ingredientRepository)
+    }
+
 
     @Test
     fun findAll() {
+       var testIngredient = Ingredient(0, "Dance Apple", IngredientFlavor.SWEET)
+       var testIngredient2 = Ingredient(0, "Sweet Wasabi", IngredientFlavor.SPICY)
+
     }
 
     @Test
@@ -40,7 +46,6 @@ class IngredientServiceTest {
 
     @Test
     fun createIngredient() {
-       var testIngredient = Ingredient(0, "Dance Apple", IngredientFlavor.SWEET)
 
        `when`(ingredientRepository.save(any<Ingredient>())).thenReturn(testIngredient)
 
