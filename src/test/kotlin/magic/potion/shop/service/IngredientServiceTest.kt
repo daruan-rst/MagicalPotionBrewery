@@ -6,7 +6,6 @@ import magic.potion.shop.model.IngredientFlavor
 import magic.potion.shop.repositories.IngredientRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.any
 import org.mockito.Mockito.`when`
@@ -21,6 +20,8 @@ class IngredientServiceTest {
 
    var testIngredient = Ingredient(0, "Dance Apple", IngredientFlavor.SWEET)
 
+    var testIngredient2 = Ingredient(0, "Sweet Wasabi", IngredientFlavor.SPICY)
+
 
     @BeforeEach
     fun setUp() {
@@ -31,8 +32,16 @@ class IngredientServiceTest {
 
     @Test
     fun findAll() {
-       var testIngredient = Ingredient(0, "Dance Apple", IngredientFlavor.SWEET)
-       var testIngredient2 = Ingredient(0, "Sweet Wasabi", IngredientFlavor.SPICY)
+        var ingredientList: List<Ingredient> = listOf(testIngredient, testIngredient2)
+
+        `when`(ingredientRepository.findAll()).thenReturn(ingredientList);
+
+        var allIngredient: List<Ingredient> = ingredientService.findAll();
+
+        assertEquals(allIngredient.size, 2)
+        assertEquals(allIngredient.first, testIngredient)
+        assertEquals(allIngredient.last, testIngredient2)
+
 
     }
 
