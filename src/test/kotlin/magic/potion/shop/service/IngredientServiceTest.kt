@@ -10,6 +10,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.any
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import java.util.*
 
 class IngredientServiceTest {
 
@@ -42,11 +43,17 @@ class IngredientServiceTest {
         assertEquals(allIngredient.first, testIngredient)
         assertEquals(allIngredient.last, testIngredient2)
 
-
     }
 
     @Test
     fun findById() {
+        testIngredient.id = 0
+
+        `when`(ingredientRepository.findById(0)).thenReturn(Optional.of(testIngredient));
+
+        var ingredient: Ingredient = ingredientService.findById(0);
+
+        assertEquals(ingredient, testIngredient)
     }
 
     @Test
