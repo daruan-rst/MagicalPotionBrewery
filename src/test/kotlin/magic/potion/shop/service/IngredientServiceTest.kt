@@ -58,6 +58,12 @@ class IngredientServiceTest {
 
     @Test
     fun findIngredientByName() {
+
+        `when`(ingredientRepository.findIngredientByName("Dance Apple")).thenReturn(Optional.of(testIngredient));
+
+        var ingredient: Ingredient = ingredientService.findIngredientByName("Dance Apple");
+
+        assertEquals(ingredient, testIngredient)
     }
 
     @Test
