@@ -80,6 +80,20 @@ class IngredientServiceTest {
 
     @Test
     fun updateIngredient() {
+
+        var newName: String = "Purple Banana";
+
+        testIngredient.id = 0
+
+        `when`(ingredientRepository.findById(0)).thenReturn(Optional.of(testIngredient));
+
+        var newIngredient:Ingredient = Ingredient(0,"Purple Banana", IngredientFlavor.SOUR)
+
+        `when`(ingredientRepository.save(testIngredient)).thenReturn(newIngredient)
+
+        var ingredient: Ingredient = ingredientService.updateIngredient(0, newIngredient)
+
+        assertEquals(ingredient, newIngredient)
     }
 
     @Test
