@@ -1,11 +1,13 @@
 package magic.potion.shop.service
 
-import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.*
+import magic.potion.shop.exceptions.ResourceNotFoundException
 import magic.potion.shop.model.Ingredient
 import magic.potion.shop.model.IngredientFlavor
 import magic.potion.shop.repositories.IngredientRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
@@ -80,20 +82,32 @@ class IngredientServiceTest {
     @Test
     fun updateIngredient() {
 
-        var newName: String = "Purple Banana";
+        val updatedIngredient = testIngredient.copy(name = "Purple Banana", flavor = IngredientFlavor.SOUR)
+        `when`(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient))
+        `when`(ingredientRepository.save(testIngredient)).thenReturn(testIngredient)
 
-        testIngredient.id = 0
+        val result = ingredientService.updateIngredient(1L, updatedIngredient)
 
-        `when`(ingredientRepository.findById(0)).thenReturn(Optional.of(testIngredient));
-
-        var newIngredient:Ingredient = Ingredient(0,"Purple Banana", IngredientFlavor.SOUR)
-
-        `when`(ingredientRepository.save(testIngredient)).thenReturn(newIngredient)
-
-        var ingredient: Ingredient = ingredientService.updateIngredient(0, newIngredient)
-
-        assertEquals(ingredient, newIngredient)
+        assertEquals("Purple Banana", result.name)
+        assertEquals(IngredientFlavor.SOUR, result.flavor)
+        verify(ingredientRepository, times(1)).findById(1L)
+        verify(ingredientRepository, times(1)).save(testIngredient)
+        assertNotNull(result.links)
+        assertTrue(result.links.hasLink("self"))
     }
+
+    @Test
+    fun `updateIngredient should throw ResourceNotFoundException when ingredient not found`() {
+
+        `when`(ingredientRepository.findById(1L)).thenReturn(Optional.empty())
+
+        assertThrows<ResourceNotFoundException> {
+            ingredientService.updateIngredient(1L, testIngredient)
+        }
+        verify(ingredientRepository, times(1)).findById(1L)
+        verify(ingredientRepository, never()).save(any())
+    }
+
 
     @Test
     fun `delete should return deleted ingredient and call repository delete`() {
