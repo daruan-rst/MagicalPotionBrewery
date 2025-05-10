@@ -7,8 +7,7 @@ import magic.potion.shop.repositories.IngredientRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
-import org.mockito.Mockito.any
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import java.util.*
 
@@ -97,7 +96,14 @@ class IngredientServiceTest {
     }
 
     @Test
-    fun delete() {
+    fun `delete should return deleted ingredient and call repository delete`() {
+        `when`(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient))
+
+        val result = ingredientService.delete(1L)
+
+        assertEquals(testIngredient, result)
+        verify(ingredientRepository, times(1)).findById(1L)
+        verify(ingredientRepository, times(1)).deleteById(1L)
     }
 
 
