@@ -1,6 +1,7 @@
 package magic.potion.shop.service
 
 import junit.framework.TestCase.*
+import magic.potion.shop.exceptions.RequiredObjectIsNullException
 import magic.potion.shop.exceptions.ResourceNotFoundException
 import magic.potion.shop.model.Ingredient
 import magic.potion.shop.model.IngredientFlavor
@@ -77,6 +78,18 @@ class IngredientServiceTest {
        assertEquals(ingredient.id, testIngredient.id)
        assertEquals(ingredient.name, testIngredient.name)
        assertEquals(ingredient.flavor, testIngredient.flavor)
+        verify(ingredientRepository, times(1)).save(testIngredient)
+        assertNotNull(ingredient.links)
+        assertTrue(ingredient.links.hasLink("self"))
+    }
+
+    @Test
+    fun `createIngredient should throw RequiredObjectIsNullException when ingredient is null`() {
+        // Act & Assert
+        assertThrows<RequiredObjectIsNullException> {
+            ingredientService.createIngredient(null)
+        }
+        verify(ingredientRepository, never()).save(any())
     }
 
     @Test
