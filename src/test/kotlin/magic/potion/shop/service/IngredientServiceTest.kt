@@ -66,6 +66,19 @@ class IngredientServiceTest {
         var ingredient: Ingredient = ingredientService.findIngredientByName("Dance Apple");
 
         assertEquals(ingredient, testIngredient)
+        verify(ingredientRepository, times(1)).findIngredientByName("Dance Apple")
+        assertNotNull(ingredient.links)
+        assertTrue(ingredient.links.hasLink("self"))
+    }
+
+    @Test
+    fun `findIngredientByName should throw ResourceNotFoundException when not found`() {
+        `when`(ingredientRepository.findIngredientByName("Electric Mango")).thenReturn(Optional.empty())
+
+        assertThrows<ResourceNotFoundException> {
+            ingredientService.findIngredientByName("Electric Mango")
+        }
+        verify(ingredientRepository, times(1)).findIngredientByName("Electric Mango")
     }
 
     @Test
@@ -85,7 +98,6 @@ class IngredientServiceTest {
 
     @Test
     fun `createIngredient should throw RequiredObjectIsNullException when ingredient is null`() {
-        // Act & Assert
         assertThrows<RequiredObjectIsNullException> {
             ingredientService.createIngredient(null)
         }
