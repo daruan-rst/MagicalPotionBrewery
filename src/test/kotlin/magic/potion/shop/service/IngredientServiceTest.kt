@@ -56,6 +56,19 @@ class IngredientServiceTest {
         var ingredient: Ingredient = ingredientService.findById(0);
 
         assertEquals(ingredient, testIngredient)
+        verify(ingredientRepository, times(1)).findById(0)
+        assertNotNull(ingredient.links)
+        assertTrue(ingredient.links.hasLink("self"))
+    }
+
+    @Test
+    fun `findById should throw ResourceNotFoundException when not found`() {
+        `when`(ingredientRepository.findById(0)).thenReturn(Optional.empty())
+
+        assertThrows<ResourceNotFoundException> {
+            ingredientService.findById(0)
+        }
+        verify(ingredientRepository, times(1)).findById(0)
     }
 
     @Test
