@@ -1,0 +1,60 @@
+package magic.potion.shop.service
+
+import junit.framework.TestCase.assertEquals
+import magic.potion.shop.model.Wizard
+import magic.potion.shop.repositories.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet
+
+class WizardServiceTest {
+
+    @Mock
+    private lateinit var wizardRepository: WizardRepository
+
+    @Mock
+    private lateinit var ingredientService: IngredientService
+
+    @Mock
+    private lateinit var recipeIngredientRepository: RecipeIngredientRepository
+
+    @Mock
+    private lateinit var recipeRepository: RecipeRepository
+
+    @Mock
+    private lateinit var potionRepository: PotionRepository
+
+    private lateinit var wizardService: WizardService
+
+    var testWizard = Wizard(1,"Antonio Carlos Jobim",
+                                        ImmutableSet.of(),
+                                        ImmutableSet.of(),
+                                        ImmutableSet.of())
+
+    var testWizard2 = Wizard(2,"Chet Baker",
+            ImmutableSet.of(),
+            ImmutableSet.of(),
+            ImmutableSet.of())
+
+    @BeforeEach
+    fun setUp(){
+        MockitoAnnotations.openMocks(this)
+        wizardService = WizardService(wizardRepository, ingredientService, recipeIngredientRepository, recipeRepository, potionRepository)
+    }
+
+    @Test
+    fun findAll() {
+
+        Mockito.`when`(wizardRepository.findAll()).thenReturn(ImmutableList.of(testWizard, testWizard2))
+
+        var allWizards = wizardService.findAll();
+
+        assertEquals(allWizards.size, 2)
+        assertEquals(allWizards.first.name, "Antonio Carlos Jobim")
+        assertEquals(allWizards.last.name, "Chet Baker")
+    }
+}
