@@ -44,6 +44,11 @@ class IngredientServiceTest {
         assertEquals(allIngredient.size, 2)
         assertEquals(allIngredient.first, testIngredient)
         assertEquals(allIngredient.last, testIngredient2)
+        verify(ingredientRepository, times(1)).findAll()
+        allIngredient.forEach {
+            assertNotNull(it.links)
+            assertTrue(it.links.hasLink("self"))
+        }
 
     }
 
