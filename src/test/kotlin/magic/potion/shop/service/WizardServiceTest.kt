@@ -1,5 +1,6 @@
 package magic.potion.shop.service
 
+import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.repositories.*
@@ -57,4 +58,19 @@ class WizardServiceTest {
         assertEquals(allWizards.first.name, "Antonio Carlos Jobim")
         assertEquals(allWizards.last.name, "Chet Baker")
     }
+    
+    @Test
+    fun createWizard(){
+        Mockito.`when`(wizardRepository.save(Mockito.any())).thenReturn(testWizard)
+        
+        var wizard = wizardService.createWizard(testWizard)
+
+        assertEquals(wizard.id, testWizard.id)
+        assertEquals(wizard.name, testWizard.name)
+        Mockito.verify(wizardRepository, Mockito.times(1)).save(testWizard)
+        TestCase.assertNotNull(wizard.links)
+        TestCase.assertTrue(wizard.links.hasLink("self"))
+    }
+    
+    
 }
