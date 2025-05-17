@@ -11,6 +11,7 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet
+import java.util.*
 
 class WizardServiceTest {
 
@@ -52,11 +53,22 @@ class WizardServiceTest {
 
         Mockito.`when`(wizardRepository.findAll()).thenReturn(ImmutableList.of(testWizard, testWizard2))
 
-        var allWizards = wizardService.findAll();
+        var allWizards = wizardService.findAll()
 
         assertEquals(allWizards.size, 2)
         assertEquals(allWizards.first.name, "Antonio Carlos Jobim")
         assertEquals(allWizards.last.name, "Chet Baker")
+    }
+
+    @Test
+    fun findById() {
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
+
+        var wizard = wizardService.findById(1)
+
+        assertEquals(testWizard.id, 1)
+        assertEquals(testWizard.name, "Antonio Carlos Jobim")
     }
     
     @Test
@@ -71,6 +83,8 @@ class WizardServiceTest {
         TestCase.assertNotNull(wizard.links)
         TestCase.assertTrue(wizard.links.hasLink("self"))
     }
+
+
     
     
 }
