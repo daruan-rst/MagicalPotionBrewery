@@ -2,10 +2,12 @@ package magic.potion.shop.service
 
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
+import magic.potion.shop.exceptions.ResourceNotFoundException
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.repositories.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -69,6 +71,16 @@ class WizardServiceTest {
 
         assertEquals(testWizard.id, 1)
         assertEquals(testWizard.name, "Antonio Carlos Jobim")
+    }
+
+    @Test
+    fun `findById should throw ResourceNotFoundException when not found`() {
+        Mockito.`when`(wizardRepository.findById(1L)).thenReturn(Optional.empty())
+
+        assertThrows<ResourceNotFoundException> {
+            wizardService.findById(1L)
+        }
+        Mockito.verify(wizardRepository, Mockito.times(1)).findById(1L)
     }
     
     @Test
