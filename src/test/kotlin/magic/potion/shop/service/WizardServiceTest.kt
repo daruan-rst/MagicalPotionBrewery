@@ -3,6 +3,9 @@ package magic.potion.shop.service
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import magic.potion.shop.exceptions.ResourceNotFoundException
+import magic.potion.shop.model.Ingredient
+import magic.potion.shop.model.IngredientFlavor
+import magic.potion.shop.model.PotionIngredient
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.repositories.*
 import org.junit.jupiter.api.BeforeEach
@@ -13,6 +16,7 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList
 import org.testcontainers.shaded.com.google.common.collect.ImmutableSet
+import java.math.BigDecimal
 import java.util.*
 
 class WizardServiceTest {
@@ -94,6 +98,31 @@ class WizardServiceTest {
         Mockito.verify(wizardRepository, Mockito.times(1)).save(testWizard)
         TestCase.assertNotNull(wizard.links)
         TestCase.assertTrue(wizard.links.hasLink("self"))
+    }
+
+    @Test
+    fun addPotionIngredients(){
+
+        val ingredientName = "Fire Apple"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN)
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        var resultWizard: Wizard = wizardService.addPotionIngredients(1, listOf(potionIngredient))
+
+        assertEquals(resultWizard.name, testWizard.name)
+        assertEquals(resultWizard.ingredientInventory.size, 1)
+        assertEquals(resultWizard.ingredientInventory.first().quantity, BigDecimal.TEN)
+        assertEquals(resultWizard.ingredientInventory.first().wizardIngredient.flavor, IngredientFlavor.SPICY)
+        assertEquals(resultWizard.ingredientInventory.first().wizardIngredient.name, ingredientName)
+
+
+
     }
 
 
