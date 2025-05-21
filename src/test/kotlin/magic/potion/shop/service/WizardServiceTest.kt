@@ -2,6 +2,7 @@ package magic.potion.shop.service
 
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
+import magic.potion.shop.exceptions.InvalidQuantityException
 import magic.potion.shop.exceptions.ResourceNotFoundException
 import magic.potion.shop.model.Ingredient
 import magic.potion.shop.model.IngredientFlavor
@@ -139,6 +140,26 @@ class WizardServiceTest {
         Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
 
         assertThrows<ResourceNotFoundException> {
+            wizardService.addPotionIngredients(1, listOf(potionIngredient))
+        }
+
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
+    }
+
+    @Test
+    fun `addPotionIngredients invalidPotionIngredient`(){
+
+        val ingredientName = "Fire Apple"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN.negate())
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        assertThrows<InvalidQuantityException> {
             wizardService.addPotionIngredients(1, listOf(potionIngredient))
         }
 
