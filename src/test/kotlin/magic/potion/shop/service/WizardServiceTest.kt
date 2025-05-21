@@ -125,6 +125,26 @@ class WizardServiceTest {
 
     }
 
+    @Test
+    fun `addPotionIngredients should throw ResourceNotFoundException when not found`(){
+
+        val ingredientName = "Fire Apple"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN)
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.empty())
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        assertThrows<ResourceNotFoundException> {
+            wizardService.addPotionIngredients(1, listOf(potionIngredient))
+        }
+
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
+    }
+
 
     
     
