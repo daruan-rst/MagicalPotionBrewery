@@ -26,6 +26,9 @@ class WizardServiceTest {
     private lateinit var wizardRepository: WizardRepository
 
     @Mock
+    private lateinit var ingredientRepository: IngredientRepository
+
+    @Mock
     private lateinit var ingredientService: IngredientService
 
     @Mock
@@ -157,7 +160,7 @@ class WizardServiceTest {
 
         Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
 
-        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+        Mockito.`when`(ingredientRepository.findIngredientByName(ingredientName)).thenReturn(Optional.of(ingredient))
 
         assertThrows<InvalidQuantityException> {
             wizardService.addPotionIngredients(1, listOf(potionIngredient))
@@ -166,7 +169,25 @@ class WizardServiceTest {
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
     }
 
+    @Test
+    fun `addPotionIngredients PotionIngredientNotFound`(){
 
+        val ingredientName = "Fire Apple"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN.negate())
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientRepository.findIngredientByName(ingredientName)).thenReturn(Optional.empty())
+
+        assertThrows<InvalidQuantityException> {
+            wizardService.addPotionIngredients(1, listOf(potionIngredient))
+        }
+
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
+    }
     
     
 }
