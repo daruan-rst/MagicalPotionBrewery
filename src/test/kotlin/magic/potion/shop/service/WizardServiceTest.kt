@@ -200,13 +200,14 @@ class WizardServiceTest {
 
         Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
 
-        Mockito.`when`(ingredientRepository.findIngredientByName(ingredientName)).thenReturn(Optional.of(ingredient))
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
 
         var wizard = wizardService.addPotionIngredients(1, listOf(potionIngredient))
 
 
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).save(wizard)
+        Mockito.verify(ingredientService, Mockito.atMostOnce()).createIngredient(ingredient)
     }
     
     
