@@ -9,6 +9,7 @@ import magic.potion.shop.model.IngredientFlavor
 import magic.potion.shop.model.PotionIngredient
 import magic.potion.shop.model.Wizard
 import magic.potion.shop.repositories.*
+import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -208,6 +209,38 @@ class WizardServiceTest {
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).save(wizard)
         Mockito.verify(ingredientService, Mockito.atMostOnce()).createIngredient(ingredient)
+        Assert.assertEquals(testWizard.ingredientInventory.size, 1 )
+    }
+
+    @Test
+    fun `addPotionIngredients wizardAlreadyHasPotionIngredient`(){
+
+        val ingredientName = "Fire Apple"
+
+        val anotherIngredientName = "Rainbow Carrot"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var anotherIngredient: Ingredient = Ingredient(1, anotherIngredientName, IngredientFlavor.SWEET)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN)
+
+        var anotherPotionIngredient: PotionIngredient = PotionIngredient(0, testWizard, anotherIngredient, BigDecimal.TEN)
+
+        testWizard.ingredientInventory = testWizard.ingredientInventory.plus(anotherPotionIngredient)
+
+        Mockito.`when`(wizardRepository.findById(1)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        var wizard = wizardService.addPotionIngredients(1, listOf(potionIngredient))
+
+
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).save(wizard)
+        Mockito.verify(ingredientService, Mockito.atMostOnce()).createIngredient(ingredient)
+        Assert.assertEquals(testWizard.ingredientInventory.size, 2 )
+
     }
     
     
