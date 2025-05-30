@@ -4,11 +4,9 @@ import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import magic.potion.shop.exceptions.InvalidQuantityException
 import magic.potion.shop.exceptions.ResourceNotFoundException
-import magic.potion.shop.model.Ingredient
-import magic.potion.shop.model.IngredientFlavor
-import magic.potion.shop.model.PotionIngredient
-import magic.potion.shop.model.Wizard
+import magic.potion.shop.model.*
 import magic.potion.shop.repositories.*
+import magic.potion.shop.request.RecipeIngredientRequest
 import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -235,11 +233,68 @@ class WizardServiceTest {
 
         var wizard = wizardService.addPotionIngredients(1, listOf(potionIngredient))
 
-
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(1)
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).save(wizard)
         Mockito.verify(ingredientService, Mockito.atMostOnce()).createIngredient(ingredient)
         Assert.assertEquals(testWizard.ingredientInventory.size, 2 )
+
+    }
+
+    @Test
+    fun `craftARecipe`(){
+
+        val ingredientName = "Fire Apple"
+
+        val anotherIngredientName = "Rainbow Carrot"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var anotherIngredient: Ingredient = Ingredient(1, anotherIngredientName, IngredientFlavor.SWEET)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN)
+
+        var anotherPotionIngredient: PotionIngredient = PotionIngredient(0, testWizard, anotherIngredient, BigDecimal.TEN)
+
+        var recipeIngredient = RecipeIngredient(0, ingredient, potionIngredient.quantity)
+
+        var anotherRecipeIngredient = RecipeIngredient(1, anotherIngredient, anotherPotionIngredient.quantity)
+
+
+        val recipeName = "Cloudy tahine"
+
+        val description = "Mix all the ingrients well on a cursed cauldron at medium heat for half an hour"
+
+        var recipeRequest = RecipeIngredientRequest(recipeName,
+                                                    description,
+                                                    listOf(potionIngredient, anotherPotionIngredient))
+
+        var recipe = Recipe(0, recipeName,testWizard, setOf(recipeIngredient, anotherRecipeIngredient), description)
+
+        Mockito.`when`(wizardRepository.findById(0)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        Mockito.`when`(ingredientService.findIngredientByName(anotherIngredientName)).thenReturn(anotherIngredient)
+
+        Mockito.`when`(recipeIngredientRepository.save(RecipeIngredient(0,ingredient, potionIngredient.quantity))).thenReturn(recipeIngredient)
+
+        Mockito.`when`(recipeIngredientRepository.save(RecipeIngredient(1,anotherIngredient, anotherPotionIngredient.quantity))).thenReturn(anotherRecipeIngredient)
+
+        var foundWizard = testWizard
+
+        foundWizard.recipes += recipe
+        Mockito.`when`(wizardRepository.save(testWizard)).thenReturn(foundWizard)
+
+        var wizard = wizardService.craftARecipe(0, recipeRequest)
+
+        Mockito.verify(recipeIngredientRepository, Mockito.times(2)).save(Mockito.any())
+        Mockito.verify(ingredientService, Mockito.times(2)).findIngredientByName(Mockito.anyString())
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).save(testWizard)
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(0)
+        assertEquals(wizard.recipes.size, 1)
+        assertEquals(wizard.recipes.first().ingredients.first(), recipeIngredient)
+        assertEquals(wizard.recipes.first().ingredients.last(), anotherRecipeIngredient)
+
 
     }
     
