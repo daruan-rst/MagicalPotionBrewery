@@ -338,9 +338,52 @@ class WizardServiceTest {
 
         Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(0)
 
+    }
 
+    @Test
+    fun `craftARecipe ingredint is invalid`(){
+
+        Mockito.`when`(wizardRepository.findById(1L)).thenReturn(Optional.empty())
+
+        val ingredientName = "Fire Apple"
+
+        val anotherIngredientName = "Rainbow Carrot"
+
+        var ingredient: Ingredient = Ingredient(0, ingredientName, IngredientFlavor.SPICY)
+
+        var anotherIngredient: Ingredient = Ingredient(1, anotherIngredientName, IngredientFlavor.SWEET)
+
+        var potionIngredient: PotionIngredient = PotionIngredient(0, testWizard, ingredient, BigDecimal.TEN.negate())
+
+        var anotherPotionIngredient: PotionIngredient = PotionIngredient(0, testWizard, anotherIngredient, BigDecimal.TEN.negate())
+
+        var recipeIngredient = RecipeIngredient(0, ingredient, potionIngredient.quantity)
+
+        var anotherRecipeIngredient = RecipeIngredient(1, anotherIngredient, anotherPotionIngredient.quantity)
+
+        val recipeName = "Cloudy tahine"
+
+        val description = "Mix all the ingrients well on a cursed cauldron at medium heat for half an hour"
+
+        var recipeRequest = RecipeIngredientRequest(recipeName,
+            description,
+            listOf(potionIngredient, anotherPotionIngredient))
+
+        var recipe = Recipe(0, recipeName,testWizard, setOf(recipeIngredient, anotherRecipeIngredient), description)
+
+        Mockito.`when`(wizardRepository.findById(0)).thenReturn(Optional.of(testWizard))
+
+        Mockito.`when`(ingredientService.findIngredientByName(ingredientName)).thenReturn(ingredient)
+
+        Mockito.`when`(ingredientService.findIngredientByName(anotherIngredientName)).thenReturn(anotherIngredient)
+
+        assertThrows<InvalidQuantityException>{
+            wizardService.craftARecipe(0, recipeRequest)
+        }
+
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(0)
+        Mockito.verify(wizardRepository, Mockito.atMostOnce()).findById(0)
 
     }
-    
     
 }
